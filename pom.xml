@@ -42,6 +42,11 @@
             <artifactId>easyexcelutil</artifactId>
             <version>0.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>1.5.13</version>
+        </dependency>
     </dependencies>
 
     <build>

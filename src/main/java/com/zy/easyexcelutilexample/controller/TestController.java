@@ -3,6 +3,7 @@ package com.zy.easyexcelutilexample.controller;
 import com.github.zywaiting.easyexcelutil.EasyExcelUtil;
 import com.zy.easyexcelutilexample.pojo.ExportInfo;
 import com.zy.easyexcelutilexample.pojo.ImportInfo;
+import com.zy.easyexcelutilexample.utils.ResponseMessageUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,8 +32,9 @@ public class TestController {
      * @return list
      */
     @RequestMapping(value = "readExcelMultipartFile", method = RequestMethod.POST)
-    public Object readExcelMultipartFile(MultipartFile excel) {
-        return EasyExcelUtil.readExcel(excel, new ImportInfo());
+    public ResponseMessageUtils readExcelMultipartFile(MultipartFile excel) {
+        List<Object> objects = EasyExcelUtil.readExcel(excel, new ImportInfo());
+        return ResponseMessageUtils.ok(objects);
     }
 
     /**
@@ -46,8 +48,9 @@ public class TestController {
      * 一下同理
      */
     @RequestMapping(value = "readExcelMultipartFileOne", method = RequestMethod.POST)
-    public Object readExcelMultipartFileOne(MultipartFile excel) {
-        return EasyExcelUtil.readExcel(excel, new ImportInfo(),1);
+    public ResponseMessageUtils readExcelMultipartFileOne(MultipartFile excel) {
+        List<Object> objects = EasyExcelUtil.readExcel(excel, new ImportInfo(), 1);
+        return ResponseMessageUtils.ok(objects);
     }
 
     /**
@@ -55,9 +58,10 @@ public class TestController {
      * @return list
      */
     @RequestMapping(value = "readExcelFile", method = RequestMethod.POST)
-    public Object readExcelFile() {
+    public ResponseMessageUtils readExcelFile() {
         String filePath = "C:\\Users\\zhuyao\\\\Downloads\\一个 Excel 文件.xlsx";
-        return EasyExcelUtil.readExcel(new File(filePath), new ImportInfo());
+        List<Object> objects = EasyExcelUtil.readExcel(new File(filePath), new ImportInfo());
+        return ResponseMessageUtils.ok(objects);
     }
 
     /**
@@ -65,7 +69,7 @@ public class TestController {
      * @return list
      */
     @RequestMapping(value = "readExcelInputStream", method = RequestMethod.POST)
-    public Object readExcelInputStream() {
+    public ResponseMessageUtils readExcelInputStream() {
         String urlString = "http://wq-zy.oss-cn-hangzhou.aliyuncs.com/test/test.xlsx";
         String fileName = "test.xlsx";
         try {
@@ -82,10 +86,10 @@ public class TestController {
                 System.out.println(importInfo.getName() + "..." + importInfo.getAge() + "..." + importInfo.getEmail());
                 System.out.println(importInfo.toString());
             }
-            return objects;
+            return ResponseMessageUtils.ok(objects);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return ResponseMessageUtils.error("异常！");
         }
     }
 
@@ -95,20 +99,22 @@ public class TestController {
      * 导出 Excel（一个 sheet）
      */
     @RequestMapping(value = "writeExcel", method = RequestMethod.GET)
-    public void writeExcel(HttpServletResponse response) throws IOException {
+    public ResponseMessageUtils writeExcel(HttpServletResponse response) throws IOException {
         List<ExportInfo> list = getList();
         String fileName = "一个 Excel 文件";
         String sheetName = "第一个 sheet";
 
         EasyExcelUtil.writeExcelWithSheets(response, fileName)
-                .write(list, sheetName, new ExportInfo());
+                .write(list, sheetName, new ExportInfo())
+                .finish();
+        return ResponseMessageUtils.ok();
     }
 
     /**
      * 导出 Excel（多个 sheet）
      */
     @RequestMapping(value = "writeExcelWithSheets", method = RequestMethod.GET)
-    public void writeExcelWithSheets(HttpServletResponse response) throws IOException {
+    public ResponseMessageUtils writeExcelWithSheets(HttpServletResponse response) throws IOException {
         List<ExportInfo> list = getList();
         String fileName = "一个 Excel 文件";
         String sheetName1 = "第一个 sheet";
@@ -120,6 +126,7 @@ public class TestController {
                 .write(list, sheetName2, new ExportInfo())
                 .write(list, sheetName3, new ExportInfo())
                 .finish();
+        return ResponseMessageUtils.ok();
     }
 
     /**
